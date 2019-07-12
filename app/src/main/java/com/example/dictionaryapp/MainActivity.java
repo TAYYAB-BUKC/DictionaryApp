@@ -1,6 +1,7 @@
 package com.example.dictionaryapp;
 
 import android.content.Intent;
+import android.database.SQLException;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
@@ -14,6 +15,9 @@ public class MainActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     SearchView searchView;
+    static DatabaseHelper databaseHelper;
+    static boolean databaseOpened=false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +36,34 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
             }
         });
+
+
+
+        databaseHelper = new DatabaseHelper(this);
+
+        if(databaseHelper.checkDataBase())
+        {
+            openDatabase();
+
+        }
+        else
+        {
+            LoadDatabaseAsync task = new LoadDatabaseAsync(MainActivity.this);
+            task.execute();
+        }
+
     }
+
+    protected static void openDatabase()
+    {
+        try {
+            databaseHelper.openDataBase();
+            databaseOpened=true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
