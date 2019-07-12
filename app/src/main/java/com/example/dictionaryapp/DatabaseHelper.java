@@ -122,4 +122,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return c;
     }
 
+    public void  insertHistory(String text)
+    {
+        myDataBase.execSQL("INSERT INTO history(word) VALUES(UPPER('"+text+"'))");
+
+    }
+
+
 }

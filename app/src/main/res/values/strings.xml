@@ -7,6 +7,16 @@
     <string name="action_clearHistory">Clear History</string>
     <string name="action_about">About</string>
     <string name="demoText">Demo Text</string>
+    <string name="noDefFound">No definition found</string>
+    <string name="noSynFound">No Synonyms found</string>
+    <string name="noExFound">No Example found</string>
+    <string name="noAntFound">No antonyms found</string>
+
+
+
+
+
+
 
 
 </resources>

@@ -22,6 +22,20 @@ public class Fragment_Antonyms extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragments_definition,container, false);//Inflate Layout
 
+        Context context=getActivity();
+        TextView text = (TextView) view.findViewById(R.id.textView);//Find textView Id
+        String antonyms= ((WordMeaningActivity)context).antonyms;
+        if(antonyms!=null)
+        {
+            antonyms = antonyms.replaceAll(",", ",\n");
+            text.setText(antonyms);
+        }
+        if(antonyms==null)
+        {
+            text.setText(R.string.noAntFound);
+        }
+
+
         return view;
     }
 }
