@@ -1,5 +1,6 @@
 package com.example.dictionaryapp;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
@@ -27,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                     searchView.setIconified(false);
+                    Intent intent = new Intent(MainActivity.this,WordMeaningActivity.class);
+                    startActivity(intent);
             }
         });
     }
