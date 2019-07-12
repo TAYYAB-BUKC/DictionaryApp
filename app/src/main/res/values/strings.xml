@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">DictionaryApp</string>
+    <string name="action_setting">Setting</string>
+    <string name="action_exit">Exit</string>
 </resources>
