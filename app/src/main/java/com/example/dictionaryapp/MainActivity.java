@@ -45,8 +45,13 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
-        if(id == R.id.action_setting) {
-            Toast.makeText(this,"Setting Item is selected from the Menu",Toast.LENGTH_LONG).show();
+        if(id == R.id.action_clearHistory) {
+            Toast.makeText(this,"Clear History Item is selected from the Menu",Toast.LENGTH_LONG).show();
+            return true;
+        }
+        else if(id == R.id.action_about){
+            Toast.makeText(this,"About Item is selected from the Menu",Toast.LENGTH_LONG).show();
+            System.exit(0);
             return true;
         }
         else if(id == R.id.action_exit){
