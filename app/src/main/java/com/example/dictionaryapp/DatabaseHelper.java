@@ -1,6 +1,7 @@
 package com.example.dictionaryapp;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -106,7 +107,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } catch (IOException e) {
                 throw new Error("Error copying database");
             }
-
         }
     }
+
+    public Cursor getMeaning(String text)
+    {
+        Cursor c= myDataBase.rawQuery("SELECT en_definition,example,synonyms,antonyms FROM words WHERE en_word==UPPER('"+text+"')",null);
+        return c;
+    }
+
+    public Cursor getSuggestions(String text)
+    {
+        Cursor c= myDataBase.rawQuery("SELECT _id, en_word FROM words WHERE en_word LIKE '"+text+"%' LIMIT 40",null);
+        return c;
+    }
+
 }
