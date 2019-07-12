@@ -21,6 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -122,24 +124,40 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                String searchText = searchView.getQuery().toString();
 
-                Cursor c = databaseHelper.getMeaning(searchText);
+                String text =  searchView.getQuery().toString();
 
-                if (c.getCount() == 0) {
-                    showAlertDialog();
-                } else {
-                    //search.setQuery("",false);
-                    searchView.clearFocus();
-                    searchView.setFocusable(false);
+                Pattern p = Pattern.compile("[A-Za-z \\-.]{1,25}");
+                Matcher m = p.matcher(text);
 
-                    Intent intent = new Intent(MainActivity.this, WordMeaningActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putString("en_word", searchText);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
+                if(m.matches())
+                {
+                    Cursor c = databaseHelper.getMeaning(text);
 
+                    if(c.getCount()==0)
+                    {
+                        showAlertDialog();
+                    }
+
+                    else
+                    {
+                        //search.setQuery("",false);
+                        searchView.clearFocus();
+                        searchView.setFocusable(false);
+
+                        Intent intent = new Intent(MainActivity.this, WordMeaningActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("en_word",text);
+                        intent.putExtras(bundle);
+                        startActivity(intent);
+                    }
                 }
+
+                else
+                {
+                    showAlertDialog();
+                }
+
                 return false;
             }
 
@@ -147,9 +165,14 @@ public class MainActivity extends AppCompatActivity {
             public boolean onQueryTextChange(String s) {
 
                 searchView.setIconifiedByDefault(false); //Give Suggestion list margins
-                Cursor cursorSuggestion = databaseHelper.getSuggestions(s);
-                suggestionAdapter.changeCursor(cursorSuggestion);
 
+                Pattern p = Pattern.compile("[A-Za-z \\-.]{1,25}");
+                Matcher m = p.matcher(s);
+
+                if(m.matches()) {
+                    Cursor cursorSuggestion=databaseHelper.getSuggestions(s);
+                    suggestionAdapter.changeCursor(cursorSuggestion);
+                }
                 return false;
             }
         });
@@ -289,6 +312,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         databaseHelper.deleteHistory();
+                        fetch_history();
                     }
                 });
 

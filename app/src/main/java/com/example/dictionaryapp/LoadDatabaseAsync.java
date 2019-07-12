@@ -8,7 +8,7 @@ import android.view.View;
 
 import java.io.IOException;
 
-public class LoadDatabaseAsync extends AsyncTask {
+public class LoadDatabaseAsync extends AsyncTask <Void, Void, Boolean> {
 
     private Context context;
     private AlertDialog alertDialog;
@@ -19,6 +19,21 @@ public class LoadDatabaseAsync extends AsyncTask {
         this.context = context;
     }
 
+    @Override
+    protected Boolean doInBackground(Void... voids) {
+
+        databaseHelper = new DatabaseHelper(context);
+
+        try {
+            databaseHelper.createDataBase();
+
+        } catch (IOException e) {
+
+            throw new Error("Database was not created");
+        }
+        databaseHelper.close();
+        return null;
+    }
 
     @Override
     protected void onPreExecute() {
@@ -38,21 +53,6 @@ public class LoadDatabaseAsync extends AsyncTask {
 
     }
 
-    @Override
-    protected Object doInBackground(Object[] objects) {
-
-        databaseHelper = new DatabaseHelper(context);
-
-        try {
-            databaseHelper.createDataBase();
-
-        } catch (IOException e) {
-
-            throw new Error("Database was not created");
-        }
-        databaseHelper.close();
-        return null;
-    }
 
 
     protected void onProgressUpdate(Void... values) {
@@ -62,6 +62,7 @@ public class LoadDatabaseAsync extends AsyncTask {
 
     protected void onPostExecute(Boolean result) {
         super.onPostExecute(result);
+
         alertDialog.dismiss();
         MainActivity.openDatabase();
     }
