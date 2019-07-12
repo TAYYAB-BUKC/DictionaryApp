@@ -4,5 +4,6 @@
     <string name="action_exit">Exit</string>
     <string name="queryHint">Type Word....</string>
     <string name="appbar_scrolling_view_behavior">android.support.design.widget.AppBarLayout$ScrollingViewPager</string>
+    <string name="someText">Some Text</string>
 
 </resources>
