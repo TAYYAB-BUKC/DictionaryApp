@@ -11,12 +11,9 @@
     <string name="noSynFound">No Synonyms found</string>
     <string name="noExFound">No Example found</string>
     <string name="noAntFound">No antonyms found</string>
-
-
-
-
-
-
+    <string name="emptyHistoryText">Words you searched most\\nrecently show up here...</string>
+    <string name="definition">definition of the word</string>
+    <string name="word">word</string>
 
 
 </resources>

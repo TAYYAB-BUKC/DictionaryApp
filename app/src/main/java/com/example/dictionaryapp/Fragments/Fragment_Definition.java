@@ -32,7 +32,7 @@ public class Fragment_Definition extends Fragment {
         text.setText(en_definition);
         if(en_definition==null)
         {
-            text.setText(R.string.nodefFound);
+            text.setText(R.string.noDefFound);
         }
 
 

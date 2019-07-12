@@ -25,7 +25,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         super(context, DB_NAME, null, 1);
         this.myContext = context;
         this.DB_PATH = "/data/data/" + context.getPackageName() + "/" + "databases/";
-
     }
 
     @Override
@@ -59,6 +58,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         myOutput.close();
         myInput.close();
 
+        Toast.makeText(myContext, "DatabaseCopied successfully", Toast.LENGTH_SHORT).show();
         // Log.i("copyDataBase", "Database copied");
     }
 

@@ -38,8 +38,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 searchView.setIconified(false);
-                Intent intent = new Intent(MainActivity.this, WordMeaningActivity.class);
-                startActivity(intent);
+               /* Intent intent = new Intent(MainActivity.this, WordMeaningActivity.class);
+                startActivity(intent);*/
             }
         });
 
