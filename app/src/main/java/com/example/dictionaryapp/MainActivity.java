@@ -9,20 +9,35 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     SearchView searchView;
     static DatabaseHelper databaseHelper;
-    static boolean databaseOpened=false;
+    static boolean databaseOpened = false;
     SimpleCursorAdapter suggestionAdapter;
+
+    ArrayList<History> historyList;
+    RecyclerView recyclerView;
+    RecyclerView.LayoutManager layoutManager;
+    RecyclerView.Adapter historyAdapter;
+
+    RelativeLayout emptyHistory;
+    Cursor cursorHistory;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,15 +128,14 @@ public class MainActivity extends AppCompatActivity {
 
                 if (c.getCount() == 0) {
                     showAlertDialog();
-                }
-                else{
+                } else {
                     //search.setQuery("",false);
                     searchView.clearFocus();
                     searchView.setFocusable(false);
 
                     Intent intent = new Intent(MainActivity.this, WordMeaningActivity.class);
                     Bundle bundle = new Bundle();
-                    bundle.putString("en_word",searchText);
+                    bundle.putString("en_word", searchText);
                     intent.putExtras(bundle);
                     startActivity(intent);
 
@@ -133,18 +147,55 @@ public class MainActivity extends AppCompatActivity {
             public boolean onQueryTextChange(String s) {
 
                 searchView.setIconifiedByDefault(false); //Give Suggestion list margins
-                Cursor cursorSuggestion=databaseHelper.getSuggestions(s);
+                Cursor cursorSuggestion = databaseHelper.getSuggestions(s);
                 suggestionAdapter.changeCursor(cursorSuggestion);
 
                 return false;
             }
         });
+
+        emptyHistory = (RelativeLayout) findViewById(R.id.emptyHistory);
+
+        //recycler View
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view_history);
+        layoutManager = new LinearLayoutManager(MainActivity.this);
+
+        recyclerView.setLayoutManager(layoutManager);
+
+        fetch_history();
+    }
+
+    private void fetch_history() {
+        historyList = new ArrayList<>();
+        historyAdapter = new RecyclerViewAdapterHistory(historyList, this);
+        recyclerView.setAdapter(historyAdapter);
+
+        History history;
+        if (databaseOpened) {
+            cursorHistory = databaseHelper.getHistory();
+            if (cursorHistory.moveToFirst()) {
+                do {
+                    history = new History(cursorHistory.getString(cursorHistory.getColumnIndex("word")), cursorHistory.getString(cursorHistory.getColumnIndex("en_definition")));
+                    historyList.add(history);
+                }
+                while (cursorHistory.moveToNext());
+            }
+
+            historyAdapter.notifyDataSetChanged();
+        }
+
+
+        if (historyAdapter.getItemCount() == 0) {
+            emptyHistory.setVisibility(View.VISIBLE);
+        } else {
+            emptyHistory.setVisibility(View.GONE);
+        }
+
     }
 
 
-    private void showAlertDialog()
-    {
-        searchView.setQuery("",false);
+    private void showAlertDialog() {
+        searchView.setQuery("", false);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.MyDialogTheme);
         builder.setTitle("Word Not Found");
@@ -175,12 +226,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-    protected static void openDatabase()
-    {
+    protected static void openDatabase() {
         try {
             databaseHelper.openDataBase();
-            databaseOpened=true;
+            databaseOpened = true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -190,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        getMenuInflater().inflate(R.menu.menu_main,menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -198,20 +247,64 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
-        if(id == R.id.action_clearHistory) {
-            Toast.makeText(this,"Clear History Item is selected from the Menu",Toast.LENGTH_LONG).show();
+        if (id == R.id.action_clearHistory) {
+
+
+            databaseHelper = new DatabaseHelper(MainActivity.this);
+            try {
+                databaseHelper.openDataBase();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            showClearHistoryAlertDialog();
             return true;
-        }
-        else if(id == R.id.action_about){
-            Toast.makeText(this,"About Item is selected from the Menu",Toast.LENGTH_LONG).show();
+        } else if (id == R.id.action_about) {
+            Toast.makeText(this, "About Item is selected from the Menu", Toast.LENGTH_LONG).show();
             System.exit(0);
             return true;
-        }
-        else if(id == R.id.action_exit){
-            Toast.makeText(this,"Exit Item is selected from the Menu",Toast.LENGTH_LONG).show();
+        } else if (id == R.id.action_exit) {
+            Toast.makeText(this, "Exit Item is selected from the Menu", Toast.LENGTH_LONG).show();
             System.exit(0);
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fetch_history();
+    }
+
+
+    private void showClearHistoryAlertDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.MyDialogTheme);
+        builder.setTitle("Are you sure?");
+        builder.setMessage("All the history will be deleted");
+
+        String positiveText = "Yes";
+        builder.setPositiveButton(positiveText,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        databaseHelper.deleteHistory();
+                    }
+                });
+
+        String negativeText = "No";
+        builder.setNegativeButton(negativeText,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+
+        AlertDialog dialog = builder.create();
+        // display dialog
+        dialog.show();
+
+
     }
 }
