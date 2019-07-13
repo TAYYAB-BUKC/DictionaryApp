@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.os.Handler;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AlertDialog;
@@ -39,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
 
     RelativeLayout emptyHistory;
     Cursor cursorHistory;
+
+    boolean doubleBackToExitPressedOnce = false;
 
 
     @Override
@@ -328,7 +331,23 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         // display dialog
         dialog.show();
+    }
 
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+        }
 
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Press BACK again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
     }
 }
